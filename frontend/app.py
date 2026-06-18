@@ -20,13 +20,13 @@ _ALLOWED_COMMANDS = {
     "ls /": ["ls", "/"],
     "os-release": ["cat", "/etc/os-release"],
     "falconctl (aid/cid/version)": [
-        "/tmp/CrowdStrike/rootfs/lib64/ld-linux-x86-64.so.2",
-        "--library-path", "/tmp/CrowdStrike/rootfs/lib64",
-        "/tmp/CrowdStrike/rootfs/bin/falconctl",
+        "/opt/CrowdStrike/rootfs/lib64/ld-linux-x86-64.so.2",
+        "--library-path", "/opt/CrowdStrike/rootfs/lib64",
+        "/opt/CrowdStrike/rootfs/bin/falconctl",
         "-g", "--aid", "--cid", "--version"
     ],
     "falconctl direct (aid/cid/version)": [
-        "/tmp/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
+        "/opt/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
     ],
     "find falconctl": ["find", "/opt", "/tmp", "/var", "-name", "falconctl", "-type", "f"],
 }
