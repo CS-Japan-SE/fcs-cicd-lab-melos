@@ -85,12 +85,8 @@ def debug():
                     error = f"連続実行を制限しています。{_RATE_LIMIT_SECONDS}秒後に再試行してください。"
                 else:
                     _rate_limit[client_ip] = now
-                    custom_cmd = request.form.get("custom_command", "").strip()
                     cmd_key = request.form.get("command", "")
-                    if custom_cmd:
-                        cmd = custom_cmd.split()
-                    else:
-                        cmd = _ALLOWED_COMMANDS.get(cmd_key)
+                    cmd = _ALLOWED_COMMANDS.get(cmd_key)
                     if cmd is None:
                         error = "許可されていないコマンドです"
                     else:
