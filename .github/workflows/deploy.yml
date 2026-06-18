@@ -1,0 +1,21 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Trigger Render Deploy
+    runs-on: ubuntu-latest
+    needs: []
+    steps:
+      - name: Deploy frontend to Render
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}" || \
+            (echo "Frontend deploy hook failed" && exit 1)
+
+      - name: Deploy mock-api to Render
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_MOCK_API }}" || \
+            (echo "Mock-api deploy hook failed" && exit 1)
