@@ -69,10 +69,16 @@ jobs:
 
       # --- イメージをghcr.ioにpush ---
       - name: Push frontend image (with sensor)
-        run: docker push ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+        run: |
+          docker push ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          docker tag ${{ env.FRONTEND_IMAGE }}:${{ github.sha }} ${{ env.FRONTEND_IMAGE }}:latest
+          docker push ${{ env.FRONTEND_IMAGE }}:latest
 
       - name: Push mock-api image
-        run: docker push ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
+        run: |
+          docker push ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
+          docker tag ${{ env.MOCK_API_IMAGE }}:${{ github.sha }} ${{ env.MOCK_API_IMAGE }}:latest
+          docker push ${{ env.MOCK_API_IMAGE }}:latest
 
       # --- CrowdStrike FCS Scan ---
       - name: CrowdStrike FCS - IaC Scan
