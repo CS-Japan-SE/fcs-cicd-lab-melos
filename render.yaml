@@ -3,6 +3,9 @@ services:
     name: melos-frontend
     image:
       url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-frontend:latest
+      creds:
+        fromRegistryCreds:
+          name: ghcr-creds
     plan: free
     envVars:
       - key: FLASK_APP
@@ -21,4 +24,14 @@ services:
     name: melos-mock-api
     image:
       url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-mock-api:latest
+      creds:
+        fromRegistryCreds:
+          name: ghcr-creds
     plan: free
+
+registryCredentials:
+  - name: ghcr-creds
+    registry: GITHUB
+    username: CS-Japan-SE
+    authToken:
+      sync: false
