@@ -19,17 +19,6 @@ _ALLOWED_COMMANDS = {
     "ps": ["ps", "aux"],
     "ls /": ["ls", "/"],
     "os-release": ["cat", "/etc/os-release"],
-    "falconctl (aid/cid/version)": [
-        "/opt/CrowdStrike/rootfs/lib64/ld-linux-x86-64.so.2",
-        "--library-path", "/opt/CrowdStrike/rootfs/lib64",
-        "/opt/CrowdStrike/rootfs/bin/falconctl",
-        "-g", "--aid", "--cid", "--version"
-    ],
-    "falconctl direct (aid/cid/version)": [
-        "/opt/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
-    ],
-    "find falconctl": ["find", "/opt", "/tmp", "/var", "-name", "falconctl", "-type", "f"],
-    "ls /opt/CrowdStrike": ["ls", "-la", "/opt/CrowdStrike"],
 }
 
 # レートリミット: IPごとの最終アクセス時刻
