@@ -103,6 +103,10 @@ def debug():
                             output = result.stdout or result.stderr
                         except subprocess.TimeoutExpired:
                             error = "コマンドがタイムアウトしました"
+                        except FileNotFoundError:
+                            error = f"コマンドが見つかりません: {cmd[0]}"
+                        except Exception as e:
+                            error = f"実行エラー: {e}"
 
     return render_template(
         "debug.html",
