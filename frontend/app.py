@@ -3,9 +3,10 @@ import subprocess
 import time
 
 import requests
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, session
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(32))
 
 MOCK_API_URL = os.environ.get("MOCK_API_URL", "http://localhost:8000")
 DEBUG_PASSWORD = os.environ.get("DEBUG_PASSWORD", "")
@@ -32,7 +33,8 @@ def index():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_message = request.json.get("message", "")
+    body = request.get_json(silent=True) or {}
+    user_message = body.get("message", "")
     if not user_message:
         return jsonify({"error": "message is required"}), 400
 
@@ -55,7 +57,7 @@ def chat():
 def debug():
     error = None
     output = None
-    authenticated = False
+    authenticated = session.get("debug_authenticated", False)
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -63,16 +65,19 @@ def debug():
         if action == "login":
             password = request.form.get("password", "")
             if DEBUG_PASSWORD and password == DEBUG_PASSWORD:
+                session["debug_authenticated"] = True
                 authenticated = True
             else:
                 error = "パスワードが違います"
 
+        elif action == "logout":
+            session.pop("debug_authenticated", None)
+            authenticated = False
+
         elif action == "execute":
-            password = request.form.get("password", "")
-            if not (DEBUG_PASSWORD and password == DEBUG_PASSWORD):
+            if not authenticated:
                 error = "認証エラー"
             else:
-                authenticated = True
                 # レートリミットチェック
                 client_ip = request.remote_addr
                 now = time.time()

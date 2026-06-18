@@ -29,7 +29,6 @@
     {% else %}
     <form method="POST" class="space-y-4">
       <input type="hidden" name="action" value="execute">
-      <input type="hidden" name="password" value="{{ request.form.get('password', '') }}">
       {% if error %}
       <div class="bg-red-900 border border-red-600 rounded px-4 py-2 text-red-300">{{ error }}</div>
       {% endif %}
@@ -41,7 +40,10 @@
           {% endfor %}
         </select>
       </div>
-      <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-2 rounded font-semibold transition-colors">実行</button>
+      <div class="flex gap-2">
+        <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-2 rounded font-semibold transition-colors">実行</button>
+        <button type="submit" form="logout-form" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-colors text-sm">ログアウト</button>
+      </div>
       {% if output %}
       <div>
         <label class="block text-sm text-gray-400 mb-1">実行結果</label>
@@ -49,6 +51,7 @@
       </div>
       {% endif %}
     </form>
+    <form id="logout-form" method="POST"><input type="hidden" name="action" value="logout"></form>
     {% endif %}
   </main>
 </body>
