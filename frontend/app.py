@@ -25,6 +25,9 @@ _ALLOWED_COMMANDS = {
         "/tmp/CrowdStrike/rootfs/bin/falconctl",
         "-g", "--aid", "--cid", "--version"
     ],
+    "falconctl direct (aid/cid/version)": [
+        "/tmp/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
+    ],
     "find falconctl": ["find", "/opt", "/tmp", "/var", "-name", "falconctl", "-type", "f"],
 }
 
