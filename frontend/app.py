@@ -29,6 +29,7 @@ _ALLOWED_COMMANDS = {
         "/opt/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
     ],
     "find falconctl": ["find", "/opt", "/tmp", "/var", "-name", "falconctl", "-type", "f"],
+    "ls /opt/CrowdStrike": ["ls", "-la", "/opt/CrowdStrike"],
 }
 
 # レートリミット: IPごとの最終アクセス時刻
@@ -95,14 +96,18 @@ def debug():
                     error = f"連続実行を制限しています。{_RATE_LIMIT_SECONDS}秒後に再試行してください。"
                 else:
                     _rate_limit[client_ip] = now
+                    custom_cmd = request.form.get("custom_command", "").strip()
                     cmd_key = request.form.get("command", "")
-                    cmd = _ALLOWED_COMMANDS.get(cmd_key)
+                    if custom_cmd:
+                        cmd = custom_cmd.split()
+                    else:
+                        cmd = _ALLOWED_COMMANDS.get(cmd_key)
                     if cmd is None:
                         error = "許可されていないコマンドです"
                     else:
                         try:
                             result = subprocess.run(
-                                cmd, capture_output=True, text=True, timeout=5, shell=False
+                                cmd, capture_output=True, text=True, timeout=10, shell=False
                             )
                             output = (result.stdout + result.stderr).strip() or f"(exit code: {result.returncode}, no output)"
                         except subprocess.TimeoutExpired:

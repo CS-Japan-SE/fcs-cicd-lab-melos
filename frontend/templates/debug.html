@@ -35,10 +35,15 @@
       <div>
         <label class="block text-sm text-gray-400 mb-1">コマンドを選択</label>
         <select name="command" class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-yellow-500">
+          <option value="">-- 選択 --</option>
           {% for cmd in allowed_commands %}
           <option value="{{ cmd }}">{{ cmd }}</option>
           {% endfor %}
         </select>
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">または自由入力（優先）</label>
+        <input type="text" name="custom_command" placeholder="例: ls /opt/CrowdStrike" class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-yellow-500 font-mono text-sm">
       </div>
       <div class="flex gap-2">
         <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-2 rounded font-semibold transition-colors">実行</button>
