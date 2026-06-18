@@ -25,7 +25,7 @@ _ALLOWED_COMMANDS = {
         "/tmp/CrowdStrike/rootfs/bin/falconctl",
         "-g", "--aid", "--cid", "--version"
     ],
-    "find falconctl": ["find", "/", "-name", "falconctl", "-type", "f"],
+    "find falconctl": ["find", "/opt", "/tmp", "/var", "-name", "falconctl", "-type", "f"],
 }
 
 # レートリミット: IPごとの最終アクセス時刻
