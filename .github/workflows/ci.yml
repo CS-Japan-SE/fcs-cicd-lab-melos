@@ -50,7 +50,7 @@ jobs:
           LATESTSENSOR=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) \
             -t falcon-container --platform x86_64 \
             -u ${{ secrets.FALCON_CLIENT_ID }} \
-            -s ${{ secrets.FALCON_CLIENT_SECRET }} | tail -1)
+            -s ${{ secrets.FALCON_CLIENT_SECRET }} 2>&1 | tail -1)
           if [[ "$LATESTSENSOR" != registry.crowdstrike.com/* ]]; then
             echo "Failed to get sensor image: $LATESTSENSOR"
             exit 1
