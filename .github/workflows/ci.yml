@@ -64,7 +64,8 @@ jobs:
             --target-image-uri ${{ env.FRONTEND_IMAGE }}:${{ github.sha }} \
             --falcon-image-uri ${{ env.FALCON_SENSOR_IMAGE }} \
             --cid ${{ secrets.FALCON_CID }} \
-            --container melos-frontend
+            --container melos-frontend \
+            --image-pull-policy IfNotPresent
 
       # --- イメージをghcr.ioにpush ---
       - name: Push frontend image (with sensor)
