@@ -19,6 +19,9 @@ _ALLOWED_COMMANDS = {
     "ps": ["ps", "aux"],
     "ls /": ["ls", "/"],
     "os-release": ["cat", "/etc/os-release"],
+    "falconctl (aid/cid/version)": [
+        "/opt/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
+    ],
 }
 
 # レートリミット: IPごとの最終アクセス時刻
