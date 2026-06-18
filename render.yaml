@@ -2,7 +2,8 @@ services:
   - type: web
     name: melos-frontend
     env: docker
-    dockerfilePath: ./frontend/Dockerfile
+    image:
+      url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-frontend:latest
     plan: free
     envVars:
       - key: FLASK_APP
@@ -12,12 +13,6 @@ services:
           name: melos-mock-api
           type: web
           property: host
-      - key: FALCON_CLIENT_ID
-        sync: false
-      - key: FALCON_CLIENT_SECRET
-        sync: false
-      - key: FALCON_CID
-        sync: false
       - key: FLASK_SECRET_KEY
         sync: false
       - key: DEBUG_PASSWORD
@@ -26,5 +21,6 @@ services:
   - type: web
     name: melos-mock-api
     env: docker
-    dockerfilePath: ./mock-api/Dockerfile
+    image:
+      url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-mock-api:latest
     plan: free

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "mcp__plugin_falcon-docs_csdocs__search_documentation",
+      "mcp__plugin_falcon-docs_csdocs__get_document_content"
+    ]
+  }
+}
