@@ -20,7 +20,10 @@ _ALLOWED_COMMANDS = {
     "ls /": ["ls", "/"],
     "os-release": ["cat", "/etc/os-release"],
     "falconctl (aid/cid/version)": [
-        "/opt/CrowdStrike/rootfs/bin/falconctl", "-g", "--aid", "--cid", "--version"
+        "/tmp/CrowdStrike/rootfs/lib64/ld-linux-x86-64.so.2",
+        "--library-path", "/tmp/CrowdStrike/rootfs/lib64",
+        "/tmp/CrowdStrike/rootfs/bin/falconctl",
+        "-g", "--aid", "--cid", "--version"
     ],
 }
 
