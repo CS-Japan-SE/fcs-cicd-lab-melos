@@ -1,7 +1,6 @@
 services:
   - type: web
     name: melos-frontend
-    env: docker
     image:
       url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-frontend:latest
     plan: free
@@ -20,7 +19,6 @@ services:
 
   - type: web
     name: melos-mock-api
-    env: docker
     image:
       url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-mock-api:latest
     plan: free
