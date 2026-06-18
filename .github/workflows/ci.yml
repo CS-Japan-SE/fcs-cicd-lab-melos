@@ -39,20 +39,10 @@ jobs:
 
       # --- アプリイメージのビルド ---
       - name: Build frontend base image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: false
-          tags: melos-frontend-base:${{ github.sha }}
-          load: true
+        run: docker build -t melos-frontend-base:${{ github.sha }} ./frontend
 
       - name: Build mock-api image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./mock-api
-          push: false
-          tags: ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
-          load: true
+        run: docker build -t ${{ env.MOCK_API_IMAGE }}:${{ github.sha }} ./mock-api
 
       # --- Falcon Container Sensor の取得 ---
       - name: Pull Falcon Container Sensor image
