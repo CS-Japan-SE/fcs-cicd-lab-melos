@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デバッグページ — メロスに聞け！</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+  <header class="bg-gray-800 border-b border-yellow-600 px-6 py-4">
+    <h1 class="text-xl font-bold text-yellow-400">デバッグページ</h1>
+    <p class="text-xs text-gray-500">⚠️ このページはデモ用です。実行可能なコマンドはホワイトリストに限定されています。</p>
+  </header>
+
+  <main class="max-w-xl mx-auto w-full px-4 py-8">
+    {% if not authenticated %}
+    <form method="POST" class="space-y-4">
+      <input type="hidden" name="action" value="login">
+      {% if error %}
+      <div class="bg-red-900 border border-red-600 rounded px-4 py-2 text-red-300">{{ error }}</div>
+      {% endif %}
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">パスワード</label>
+        <input type="password" name="password" class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-yellow-500" autofocus>
+      </div>
+      <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-2 rounded font-semibold transition-colors">ログイン</button>
+    </form>
+
+    {% else %}
+    <form method="POST" class="space-y-4">
+      <input type="hidden" name="action" value="execute">
+      <input type="hidden" name="password" value="{{ request.form.get('password', '') }}">
+      {% if error %}
+      <div class="bg-red-900 border border-red-600 rounded px-4 py-2 text-red-300">{{ error }}</div>
+      {% endif %}
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">コマンドを選択</label>
+        <select name="command" class="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-yellow-500">
+          {% for cmd in allowed_commands %}
+          <option value="{{ cmd }}">{{ cmd }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-2 rounded font-semibold transition-colors">実行</button>
+      {% if output %}
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">実行結果</label>
+        <pre class="bg-gray-800 border border-gray-700 rounded px-4 py-3 text-sm text-green-400 whitespace-pre-wrap">{{ output }}</pre>
+      </div>
+      {% endif %}
+    </form>
+    {% endif %}
+  </main>
+</body>
+</html>
