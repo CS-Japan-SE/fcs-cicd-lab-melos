@@ -104,7 +104,7 @@ def debug():
                             result = subprocess.run(
                                 cmd, capture_output=True, text=True, timeout=5, shell=False
                             )
-                            output = result.stdout or result.stderr
+                            output = (result.stdout + result.stderr).strip() or f"(exit code: {result.returncode}, no output)"
                         except subprocess.TimeoutExpired:
                             error = "コマンドがタイムアウトしました"
                         except FileNotFoundError:
