@@ -76,41 +76,30 @@ jobs:
 
       # --- CrowdStrike FCS Scan ---
       - name: CrowdStrike FCS - IaC Scan
-        uses: CrowdStrike/fcs-action@v1
+        uses: crowdstrike/fcs-action@v2.0.0
         with:
           falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
-          falcon_client_secret: ${{ secrets.FALCON_CLIENT_SECRET }}
-          scan_types: iac
+          falcon_region: us-1
           path: .
+        env:
+          FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: CrowdStrike FCS - Image Scan (frontend)
-        uses: CrowdStrike/fcs-action@v1
+        uses: crowdstrike/fcs-action@v4.0.1
         with:
           falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
-          falcon_client_secret: ${{ secrets.FALCON_CLIENT_SECRET }}
-          scan_types: image
+          falcon_region: us-1
+          scan_type: image
           image: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+        env:
+          FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: CrowdStrike FCS - Image Scan (mock-api)
-        uses: CrowdStrike/fcs-action@v1
+        uses: crowdstrike/fcs-action@v4.0.1
         with:
           falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
-          falcon_client_secret: ${{ secrets.FALCON_CLIENT_SECRET }}
-          scan_types: image
+          falcon_region: us-1
+          scan_type: image
           image: ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
-
-      - name: CrowdStrike FCS - SBOM Generation (frontend)
-        uses: CrowdStrike/fcs-action@v1
-        with:
-          falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
-          falcon_client_secret: ${{ secrets.FALCON_CLIENT_SECRET }}
-          scan_types: sbom
-          image: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-
-      - name: CrowdStrike FCS - SBOM Generation (mock-api)
-        uses: CrowdStrike/fcs-action@v1
-        with:
-          falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
-          falcon_client_secret: ${{ secrets.FALCON_CLIENT_SECRET }}
-          scan_types: sbom
-          image: ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
+        env:
+          FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
