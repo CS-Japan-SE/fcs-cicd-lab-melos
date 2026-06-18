@@ -56,15 +56,11 @@ jobs:
 
       # --- Falcon Container Sensor の取得 ---
       - name: Pull Falcon Container Sensor image
-        env:
-          FALCON_CLIENT_ID: ${{ secrets.FALCON_CLIENT_ID }}
-          FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
         run: |
-          SCRIPT_OUTPUT=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) \
-            -t falcon-container --platform x86_64 2>&1)
-          echo "$SCRIPT_OUTPUT"
-          LATESTSENSOR=$(echo "$SCRIPT_OUTPUT" | grep -E 'registry\.crowdstrike\.com/[^ ]+' | tail -1)
-          echo "Extracted sensor image: $LATESTSENSOR"
+          LATESTSENSOR=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) \
+            -t falcon-container --platform x86_64 \
+            -u ${{ secrets.FALCON_CLIENT_ID }} \
+            -s ${{ secrets.FALCON_CLIENT_SECRET }} 2>&1 | tail -1)
           echo "FALCON_SENSOR_IMAGE=$LATESTSENSOR" >> $GITHUB_ENV
 
       # --- falconutil patch-image で Sensorをイメージに埋め込む ---
