@@ -13,8 +13,15 @@ _MELOS_CHUNKS: list[str] = []
 
 def _load_melos() -> None:
     text = Path("melos.txt").read_text(encoding="utf-8").strip()
-    paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
-    _MELOS_CHUNKS.extend(paragraphs)
+    # 「（古伝説と、シルレルの詩から。）」以降を除去
+    cutoff = text.find("（古伝説と、シルレルの詩から。）")
+    if cutoff != -1:
+        text = text[:cutoff]
+    # 1行ずつ分割し、空行と短すぎる行を除外
+    for line in text.splitlines():
+        line = line.strip()
+        if len(line) >= 10:
+            _MELOS_CHUNKS.append(line)
 
 
 _load_melos()
