@@ -28,7 +28,7 @@
         type="text"
         placeholder="メロスへのメッセージを入力..."
         class="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-red-500"
-        onkeydown="if(event.key==='Enter') sendMessage()"
+        onkeydown="if(event.key==='Enter' && !event.isComposing) sendMessage()"
       />
       <button
         onclick="sendMessage()"
