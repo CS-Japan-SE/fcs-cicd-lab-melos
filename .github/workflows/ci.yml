@@ -50,7 +50,11 @@ jobs:
           LATESTSENSOR=$(bash <(curl -Ls https://github.com/CrowdStrike/falcon-scripts/releases/latest/download/falcon-container-sensor-pull.sh) \
             -t falcon-container --platform x86_64 \
             -u ${{ secrets.FALCON_CLIENT_ID }} \
-            -s ${{ secrets.FALCON_CLIENT_SECRET }} 2>&1 | tail -1)
+            -s ${{ secrets.FALCON_CLIENT_SECRET }} | tail -1)
+          if [[ "$LATESTSENSOR" != registry.crowdstrike.com/* ]]; then
+            echo "Failed to get sensor image: $LATESTSENSOR"
+            exit 1
+          fi
           echo "FALCON_SENSOR_IMAGE=$LATESTSENSOR" >> $GITHUB_ENV
 
       # --- falconutil patch-image で Sensorをイメージに埋め込む ---
@@ -65,7 +69,8 @@ jobs:
             --falcon-image-uri ${{ env.FALCON_SENSOR_IMAGE }} \
             --cid ${{ secrets.FALCON_CID }} \
             --container melos-frontend \
-            --image-pull-policy IfNotPresent
+            --image-pull-policy IfNotPresent \
+            --falconctl-opts "--tags=melos-frontend"
 
       # --- イメージをghcr.ioにpush ---
       - name: Push frontend image (with sensor)
