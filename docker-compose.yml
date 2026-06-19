@@ -4,6 +4,7 @@ services:
       context: ./mock-api
       args:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.org/simple}
+        PIP_TRUSTED_HOST: ${PIP_TRUSTED_HOST:-}
     ports:
       - "8000:8000"
 
@@ -12,6 +13,7 @@ services:
       context: ./frontend
       args:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.org/simple}
+        PIP_TRUSTED_HOST: ${PIP_TRUSTED_HOST:-}
         EXTRA_CA_CERT: "${EXTRA_CA_CERT:-}"
     ports:
       - "5000:5000"
