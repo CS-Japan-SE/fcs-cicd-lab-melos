@@ -58,7 +58,10 @@ GitHub (push)
 Render Dashboard で render.yaml をインポート後、`melos-frontend` サービスに以下を手動設定：
 
 - `FLASK_SECRET_KEY`（任意のランダム文字列: `openssl rand -hex 32` で生成）
+- `LOGIN_PASSWORD`（チャット画面のログインパスワード）
 - `DEBUG_PASSWORD`（デバッグページ用パスワード）
+- `CS_AIDR_BASE_URL_TEMPLATE`（例: `https://api.crowdstrike.com/aidr/{SERVICE_NAME}`）
+- `CS_AIDR_TOKEN`（AIDR 認証トークン）
 
 > Falcon APIキー・CIDはRenderには不要です。センサーはGitHub ActionsのビルドステップでイメージにPatchされます。
 
@@ -66,22 +69,39 @@ Render Dashboard で render.yaml をインポート後、`melos-frontend` サー
 
 `/debug` にアクセスするとパスワード保護されたコマンド実行ページが表示されます。
 
-- 実行可能コマンドは `id`, `whoami`, `uname -a`, `ps aux`, `ls /`, `cat /etc/os-release` のみ
+- 実行可能コマンドは `id`, `whoami`, `uname -a`, `ps aux`, `ls /`, `cat /etc/os-release`, `chgrp 0 /etc/ld.so.preload` のみ
+- `chgrp 0 /etc/ld.so.preload` は Falcon EDR アラート発報用のデモコマンド
 - Falcon Sensor がコマンドラインを記録するため、Falcon Console の Process Timeline / AIDR でキャプチャを確認できます
+
+## AIDR 連携
+
+チャット画面右上の AIDR トグルで ON/OFF を切り替えられます。ON 時はユーザー入力（input）と AI レスポンス（output）を CrowdStrike AIDR に送信します。
 
 ## ローカル開発
 
 ```bash
-# mock-api 起動
-cd mock-api
-pip install -r requirements.txt
-uvicorn app:app --port 8000
+# CA証明書が必要な環境（Zscaler等）では事前に設定
+export EXTRA_CA_CERT="$(cat ~/.config/crowdstrike-ROOT-CA.crt)"
 
-# frontend 起動（別ターミナル）
-cd frontend
-pip install -r requirements.txt
-MOCK_API_URL=http://localhost:8000 flask run --port 5000
+# 起動（初回はイメージのビルドが行われます）
+EXTRA_CA_CERT="$EXTRA_CA_CERT" docker compose up --build -d
 ```
+
+アクセス: <http://localhost:5000>（ログインパスワード: `LOGIN_PASSWORD` 環境変数で指定、デフォルト `demo`）
+
+```bash
+# 停止
+docker compose down
+```
+
+### 環境変数（ローカル）
+
+| 変数 | デフォルト | 用途 |
+|---|---|---|
+| `LOGIN_PASSWORD` | `demo` | チャット画面のログインパスワード |
+| `DEBUG_PASSWORD` | `debug` | デバッグページのパスワード |
+| `CS_AIDR_BASE_URL_TEMPLATE` | （なし） | AIDR エンドポイント（未設定時は無効） |
+| `CS_AIDR_TOKEN` | （なし） | AIDR 認証トークン |
 
 ## 技術スタック
 
@@ -90,4 +110,4 @@ MOCK_API_URL=http://localhost:8000 flask run --port 5000
 - **Container Registry**: GitHub Container Registry (ghcr.io)
 - **CI/CD**: GitHub Actions + CrowdStrike FCS Action
 - **Hosting**: Render (無料枠)
-- **Security**: CrowdStrike Falcon Container Sensor (falconutil patch-image)
+- **Security**: CrowdStrike Falcon Container Sensor (falconutil patch-image), CrowdStrike AIDR

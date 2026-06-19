@@ -15,10 +15,16 @@ services:
           property: host
       - key: FLASK_SECRET_KEY
         sync: false
+      - key: LOGIN_PASSWORD
+        sync: false
       - key: DEBUG_PASSWORD
         sync: false
       - key: CS_APP_NAME
         value: melos-frontend
+      - key: CS_AIDR_BASE_URL_TEMPLATE
+        sync: false
+      - key: CS_AIDR_TOKEN
+        sync: false
 
   - type: web
     name: melos-mock-api

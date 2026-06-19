@@ -3,13 +3,26 @@ import subprocess
 import time
 
 import requests
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(32))
 
 MOCK_API_URL = os.environ.get("MOCK_API_URL", "http://localhost:8000")
+LOGIN_PASSWORD = os.environ.get("LOGIN_PASSWORD", "")
 DEBUG_PASSWORD = os.environ.get("DEBUG_PASSWORD", "")
+CS_APP_NAME = os.environ.get("CS_APP_NAME", "melos-frontend")
+
+# AIDR クライアント初期化（環境変数未設定時は無効化）
+_aidr_client = None
+_aidr_base_url = os.environ.get("CS_AIDR_BASE_URL_TEMPLATE")
+_aidr_token = os.environ.get("CS_AIDR_TOKEN")
+if _aidr_base_url and _aidr_token:
+    try:
+        from crowdstrike_aidr import AIGuard
+        _aidr_client = AIGuard(base_url_template=_aidr_base_url, token=_aidr_token)
+    except Exception:
+        pass
 
 # ホワイトリスト: デバッグページで実行可能なコマンド
 _ALLOWED_COMMANDS = {
@@ -19,6 +32,7 @@ _ALLOWED_COMMANDS = {
     "ps": ["ps", "aux"],
     "ls /": ["ls", "/"],
     "os-release": ["cat", "/etc/os-release"],
+    "chgrp 0 /etc/ld.so.preload": ["chgrp", "0", "/etc/ld.so.preload"],
 }
 
 # レートリミット: IPごとの最終アクセス時刻
@@ -26,21 +40,68 @@ _rate_limit: dict[str, float] = {}
 _RATE_LIMIT_SECONDS = 5
 
 
+def _login_required():
+    """LOGIN_PASSWORD が設定されている場合、未ログインなら login ページへリダイレクト。"""
+    if LOGIN_PASSWORD and not session.get("logged_in"):
+        return redirect(url_for("login", next=request.path))
+    return None
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        if request.form.get("password", "") == LOGIN_PASSWORD:
+            session["logged_in"] = True
+            return redirect(request.args.get("next") or url_for("index"))
+        error = "パスワードが違います"
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
 @app.route("/")
 def index():
+    if (redir := _login_required()):
+        return redir
     return render_template("index.html")
 
 
 @app.route("/chat", methods=["POST"])
 def chat():
+    if (redir := _login_required()):
+        return redir
     body = request.get_json(silent=True) or {}
     user_message = body.get("message", "")
     if not user_message:
         return jsonify({"error": "message is required"}), 400
 
+    aidr_enabled = body.get("aidr_enabled", True)
+    messages = [{"role": "user", "content": user_message}]
+    source_ip = request.remote_addr
+
+    # AIDR: input ガード
+    if _aidr_client and aidr_enabled:
+        try:
+            _aidr_client.guard_chat_completions(
+                event_type="input",
+                guard_input={"messages": messages},
+                app_id=CS_APP_NAME,
+                user_id=source_ip,
+                llm_provider="openai",
+                model="gpt-3.5-turbo",
+                source_ip=source_ip,
+            )
+        except Exception:
+            pass
+
     payload = {
         "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": user_message}],
+        "messages": messages,
     }
     try:
         resp = requests.post(f"{MOCK_API_URL}/v1/chat/completions", json=payload, timeout=10)
@@ -50,11 +111,28 @@ def chat():
     except Exception as e:
         reply = f"エラーが発生しました: {e}"
 
+    # AIDR: output ガード
+    if _aidr_client and aidr_enabled:
+        try:
+            _aidr_client.guard_chat_completions(
+                event_type="output",
+                guard_input={"messages": messages + [{"role": "assistant", "content": reply}]},
+                app_id=CS_APP_NAME,
+                user_id=source_ip,
+                llm_provider="openai",
+                model="gpt-3.5-turbo",
+                source_ip=source_ip,
+            )
+        except Exception:
+            pass
+
     return jsonify({"reply": reply})
 
 
 @app.route("/debug", methods=["GET", "POST"])
 def debug():
+    if (redir := _login_required()):
+        return redir
     error = None
     output = None
     authenticated = session.get("debug_authenticated", False)
@@ -118,3 +196,4 @@ def health():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+

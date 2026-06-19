@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン — メロスに聞け！</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
+  <div class="w-full max-w-sm px-6">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-red-400">メロスに聞け！</h1>
+      <p class="text-sm text-gray-400 mt-1">問え。メロスが答える。</p>
+    </div>
+
+    <form method="POST" class="bg-gray-800 rounded-lg px-6 py-8 space-y-5 border border-gray-700">
+      {% if error %}
+      <div class="bg-red-900 border border-red-600 rounded px-4 py-2 text-red-300 text-sm">{{ error }}</div>
+      {% endif %}
+
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">パスワード</label>
+        <input
+          type="password"
+          name="password"
+          autofocus
+          class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-red-500"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-red-700 hover:bg-red-600 py-2 rounded-lg font-semibold transition-colors"
+      >
+        ログイン
+      </button>
+    </form>
+  </div>
+</body>
+</html>

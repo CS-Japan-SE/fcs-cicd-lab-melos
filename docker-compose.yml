@@ -1,0 +1,26 @@
+services:
+  mock-api:
+    build:
+      context: ./mock-api
+      args:
+        PIP_INDEX_URL: https://artifactory.cicd.dc/artifactory/api/pypi/pypi-prod-virtual/simple
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        PIP_INDEX_URL: https://artifactory.cicd.dc/artifactory/api/pypi/pypi-prod-virtual/simple
+        EXTRA_CA_CERT: "${EXTRA_CA_CERT:-}"
+    ports:
+      - "5000:5000"
+    environment:
+      - MOCK_API_URL=http://mock-api:8000
+      - FLASK_SECRET_KEY=local-dev-secret
+      - LOGIN_PASSWORD=demo
+      - DEBUG_PASSWORD=debug
+      - CS_AIDR_BASE_URL_TEMPLATE=${CS_AIDR_BASE_URL_TEMPLATE:-}
+      - CS_AIDR_TOKEN=${CS_AIDR_TOKEN:-}
+    depends_on:
+      - mock-api
