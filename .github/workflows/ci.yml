@@ -17,6 +17,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
 
     steps:
       - uses: actions/checkout@v4
@@ -88,29 +89,59 @@ jobs:
       # --- CrowdStrike FCS Scan ---
       - name: CrowdStrike FCS - IaC Scan
         uses: crowdstrike/fcs-action@v2.0.0
+        id: fcs-iac
         with:
           falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
           falcon_region: us-1
           path: .
+          report_formats: sarif
+          output_path: ./scan-results/iac
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
+      - name: Upload IaC SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./scan-results/iac
+          category: fcs-iac
+
       - name: CrowdStrike FCS - Image Scan (frontend)
         uses: crowdstrike/fcs-action@v4.0.1
+        id: fcs-image-frontend
         with:
           falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
           falcon_region: us-1
           scan_type: image
           image: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          report_formats: sarif
+          output_path: ./scan-results/image-frontend
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
+      - name: Upload frontend image SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./scan-results/image-frontend
+          category: fcs-image-frontend
+
       - name: CrowdStrike FCS - Image Scan (mock-api)
         uses: crowdstrike/fcs-action@v4.0.1
+        id: fcs-image-mock-api
         with:
           falcon_client_id: ${{ secrets.FALCON_CLIENT_ID }}
           falcon_region: us-1
           scan_type: image
           image: ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
+          report_formats: sarif
+          output_path: ./scan-results/image-mock-api
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
+
+      - name: Upload mock-api image SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ./scan-results/image-mock-api
+          category: fcs-image-mock-api
