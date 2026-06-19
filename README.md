@@ -80,11 +80,15 @@ Render Dashboard で render.yaml をインポート後、`melos-frontend` サー
 ## ローカル開発
 
 ```bash
+# .env.example をコピーして必要な値を設定
+cp .env.example .env
+# .env を編集（PIP_INDEX_URL 等）
+
 # CA証明書が必要な環境（Zscaler等）では事前に設定
 export EXTRA_CA_CERT="$(cat ~/.config/crowdstrike-ROOT-CA.crt)"
 
 # 起動（初回はイメージのビルドが行われます）
-EXTRA_CA_CERT="$EXTRA_CA_CERT" docker compose up --build -d
+docker compose up --build -d
 ```
 
 アクセス: <http://localhost:5000>（ログインパスワード: `LOGIN_PASSWORD` 環境変数で指定、デフォルト `demo`）
