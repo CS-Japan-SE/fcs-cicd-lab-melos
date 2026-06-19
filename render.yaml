@@ -3,6 +3,7 @@ services:
     name: melos-frontend
     image:
       url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-frontend:latest
+
     plan: free
     envVars:
       - key: FLASK_APP
@@ -16,6 +17,8 @@ services:
         sync: false
       - key: DEBUG_PASSWORD
         sync: false
+      - key: CS_APP_NAME
+        value: melos-frontend
 
   - type: web
     name: melos-mock-api
