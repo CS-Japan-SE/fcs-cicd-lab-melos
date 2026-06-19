@@ -10,19 +10,20 @@ CrowdStrike Falcon CI/CD デモ環境です。GitHub Actions と Render を使�
 
 ```
 GitHub (push)
-  → GitHub Actions
+  -> GitHub Actions
       1. アプリイメージをビルド
-      2. falconutil patch-image でFalcon Sensorを埋め込む
+      2. falconutil patch-image で Falcon Sensor を埋め込む
       3. FCS Scan (IaC / Image Scan / SBOM)
-      4. ghcr.io にpush
-  → Render Deploy Hook
-      → センサー入りイメージをデプロイ
+      4. ghcr.io に push
+  -> Render Deploy Hook
+      -> センサー入りイメージをデプロイ
 
-                    ┌──────────────────┐
-                    │   Render         │
-              ┌─────┴──────┬───────────┴──────┐
-         frontend          mock-api
-       (Flask + Sensor)   (FastAPI, 内部のみ)
+  Render
+  +-------------------------+
+  | frontend (Flask+Sensor) |  <- Internet公開
+  +-------------------------+
+  | mock-api (FastAPI)      |  <- Render内部のみ
+  +-------------------------+
 ```
 
 | サービス | 役割 | Falcon Sensor | 公開 |
