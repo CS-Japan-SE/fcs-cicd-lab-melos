@@ -53,6 +53,7 @@ def login():
     if request.method == "POST":
         if request.form.get("password", "") == LOGIN_PASSWORD:
             session["logged_in"] = True
+            session["username"] = request.form.get("username", "").strip() or "anonymous"
             return redirect(request.args.get("next") or url_for("index"))
         error = "パスワードが違います"
     return render_template("login.html", error=error)
@@ -83,6 +84,7 @@ def chat():
     aidr_enabled = body.get("aidr_enabled", True)
     messages = [{"role": "user", "content": user_message}]
     source_ip = request.remote_addr
+    user_id = session.get("username", source_ip)
 
     # AIDR: input ガード
     if _aidr_client and aidr_enabled:
@@ -91,7 +93,7 @@ def chat():
                 event_type="input",
                 guard_input={"messages": messages},
                 app_id=CS_APP_NAME,
-                user_id=source_ip,
+                user_id=user_id,
                 llm_provider="openai",
                 model="gpt-3.5-turbo",
                 source_ip=source_ip,
@@ -118,7 +120,7 @@ def chat():
                 event_type="output",
                 guard_input={"messages": messages + [{"role": "assistant", "content": reply}]},
                 app_id=CS_APP_NAME,
-                user_id=source_ip,
+                user_id=user_id,
                 llm_provider="openai",
                 model="gpt-3.5-turbo",
                 source_ip=source_ip,
