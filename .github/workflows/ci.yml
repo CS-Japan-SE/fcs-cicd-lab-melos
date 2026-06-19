@@ -128,17 +128,6 @@ jobs:
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
-      - name: Convert frontend image JSON to SARIF
-        if: always() && hashFiles('./scan-results/images/frontend.json') != ''
-        run: echo "Image scan results saved to artifacts (not uploaded to Code Scanning)"
-
-      - name: Upload frontend image SARIF to GitHub Code Scanning
-        if: false
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ./scan-results/images/frontend.sarif
-          category: fcs-image-frontend
-
       - name: CrowdStrike FCS - Image Scan (mock-api)
         uses: crowdstrike/fcs-action@v4.0.1
         id: fcs-image-mock-api
@@ -152,17 +141,6 @@ jobs:
           upload_results: true
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
-
-      - name: Convert mock-api image JSON to SARIF
-        if: always() && hashFiles('./scan-results/images/mock-api.json') != ''
-        run: echo "Image scan results saved to artifacts (not uploaded to Code Scanning)"
-
-      - name: Upload mock-api image SARIF to GitHub Code Scanning
-        if: false
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ./scan-results/images/mock-api.sarif
-          category: fcs-image-mock-api
 
       - name: Upload scan results as artifacts
         uses: actions/upload-artifact@v4
