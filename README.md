@@ -29,7 +29,9 @@ GitHub (push)
 | サービス | 役割 | Falcon Sensor | 公開 |
 |---|---|---|---|
 | **frontend** | チャットUI・AIプロキシ | ✅ falconutil で埋め込み | Internet公開 |
-| **mock-api** | OpenAI互換モックAPI（走れメロス返答） | ❌ 不要 | Render内部のみ |
+| **mock-api** | OpenAI互換モックAPI（走れメロス返答） | ❌ 不要 | Internet公開（※） |
+
+> ※ Render 無料プランのため mock-api もインターネット公開されますが、走れメロスの本文を返すのみで機密情報は含みません。有料プランの Private Service に変更すると内部専用にできます。
 
 ## リポジトリ構成
 
