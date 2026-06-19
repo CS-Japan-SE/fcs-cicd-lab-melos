@@ -2,7 +2,7 @@ services:
   - type: web
     name: melos-frontend
     image:
-      url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-frontend:latest
+      url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos/melos-frontend:latest
 
     plan: free
     envVars:
@@ -29,5 +29,5 @@ services:
   - type: web
     name: melos-mock-api
     image:
-      url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos-private/melos-mock-api:latest
+      url: ghcr.io/cs-japan-se/fcs-cicd-lab-melos/melos-mock-api:latest
     plan: free
