@@ -87,6 +87,9 @@ jobs:
           docker push ${{ env.MOCK_API_IMAGE }}:latest
 
       # --- CrowdStrike FCS Scan ---
+      - name: Create scan results directories
+        run: mkdir -p ./scan-results/iac ./scan-results/image-frontend ./scan-results/image-mock-api
+
       - name: CrowdStrike FCS - IaC Scan
         uses: crowdstrike/fcs-action@v2.0.0
         id: fcs-iac
@@ -95,15 +98,15 @@ jobs:
           falcon_region: us-1
           path: .
           report_formats: sarif
-          output_path: ./scan-results/iac.sarif
+          output_path: ./scan-results/iac
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: Upload IaC SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('./scan-results/iac.sarif') != ''
+        if: always() && hashFiles('./scan-results/iac/*.sarif') != ''
         with:
-          sarif_file: ./scan-results/iac.sarif
+          sarif_file: ./scan-results/iac
           category: fcs-iac
 
       - name: CrowdStrike FCS - Image Scan (frontend)
@@ -115,15 +118,15 @@ jobs:
           scan_type: image
           image: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
           report_formats: sarif
-          output_path: ./scan-results/image-frontend.sarif
+          output_path: ./scan-results/image-frontend
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: Upload frontend image SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('./scan-results/image-frontend.sarif') != ''
+        if: always() && hashFiles('./scan-results/image-frontend/*.sarif') != ''
         with:
-          sarif_file: ./scan-results/image-frontend.sarif
+          sarif_file: ./scan-results/image-frontend
           category: fcs-image-frontend
 
       - name: CrowdStrike FCS - Image Scan (mock-api)
@@ -135,13 +138,13 @@ jobs:
           scan_type: image
           image: ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
           report_formats: sarif
-          output_path: ./scan-results/image-mock-api.sarif
+          output_path: ./scan-results/image-mock-api
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: Upload mock-api image SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('./scan-results/image-mock-api.sarif') != ''
+        if: always() && hashFiles('./scan-results/image-mock-api/*.sarif') != ''
         with:
-          sarif_file: ./scan-results/image-mock-api.sarif
+          sarif_file: ./scan-results/image-mock-api
           category: fcs-image-mock-api
