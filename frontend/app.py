@@ -54,7 +54,10 @@ def login():
         if request.form.get("password", "") == LOGIN_PASSWORD:
             session["logged_in"] = True
             session["username"] = request.form.get("username", "").strip() or "anonymous"
-            return redirect(request.args.get("next") or url_for("index"))
+            next_url = request.args.get("next", "")
+            if next_url and next_url.startswith("/"):
+                return redirect(next_url)
+            return redirect(url_for("index"))
         error = "パスワードが違います"
     return render_template("login.html", error=error)
 
@@ -110,8 +113,8 @@ def chat():
         resp.raise_for_status()
         data = resp.json()
         reply = data["choices"][0]["message"]["content"]
-    except Exception as e:
-        reply = f"エラーが発生しました: {e}"
+    except Exception:
+        reply = "エラーが発生しました"
 
     # AIDR: output ガード
     if _aidr_client and aidr_enabled:
