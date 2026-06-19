@@ -88,7 +88,7 @@ jobs:
 
       # --- CrowdStrike FCS Scan ---
       - name: Create scan results directories
-        run: mkdir -p ./scan-results/iac
+        run: mkdir -p ./scan-results/iac ./scan-results/images
 
       - name: CrowdStrike FCS - IaC Scan
         uses: crowdstrike/fcs-action@v2.0.0
@@ -119,15 +119,16 @@ jobs:
           scan_type: image
           image: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
           report_formats: sarif
-          output_path: ./scan-results/image-frontend.sarif
+          output_path: ./scan-results/images/frontend.json
+          upload_results: true
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: Upload frontend image SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('./scan-results/image-frontend.sarif') != ''
+        if: always() && hashFiles('./scan-results/images/frontend.sarif') != ''
         with:
-          sarif_file: ./scan-results/image-frontend.sarif
+          sarif_file: ./scan-results/images/frontend.sarif
           category: fcs-image-frontend
 
       - name: CrowdStrike FCS - Image Scan (mock-api)
@@ -139,13 +140,22 @@ jobs:
           scan_type: image
           image: ${{ env.MOCK_API_IMAGE }}:${{ github.sha }}
           report_formats: sarif
-          output_path: ./scan-results/image-mock-api.sarif
+          output_path: ./scan-results/images/mock-api.json
+          upload_results: true
         env:
           FALCON_CLIENT_SECRET: ${{ secrets.FALCON_CLIENT_SECRET }}
 
       - name: Upload mock-api image SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('./scan-results/image-mock-api.sarif') != ''
+        if: always() && hashFiles('./scan-results/images/mock-api.sarif') != ''
         with:
-          sarif_file: ./scan-results/image-mock-api.sarif
+          sarif_file: ./scan-results/images/mock-api.sarif
           category: fcs-image-mock-api
+
+      - name: Upload scan results as artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fcs-scan-results
+          path: ./scan-results/
+          if-no-files-found: ignore

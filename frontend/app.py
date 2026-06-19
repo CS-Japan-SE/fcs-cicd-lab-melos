@@ -43,7 +43,8 @@ _RATE_LIMIT_SECONDS = 5
 def _login_required():
     """LOGIN_PASSWORD が設定されている場合、未ログインなら login ページへリダイレクト。"""
     if LOGIN_PASSWORD and not session.get("logged_in"):
-        return redirect(url_for("login", next=request.path))
+        session["login_next"] = request.path
+        return redirect(url_for("login"))
     return None
 
 
@@ -54,10 +55,8 @@ def login():
         if request.form.get("password", "") == LOGIN_PASSWORD:
             session["logged_in"] = True
             session["username"] = request.form.get("username", "").strip() or "anonymous"
-            next_url = request.args.get("next", "")
-            if next_url and next_url.startswith("/"):
-                return redirect(next_url)
-            return redirect(url_for("index"))
+            next_url = session.pop("login_next", None)
+            return redirect(next_url if next_url else url_for("index"))
         error = "パスワードが違います"
     return render_template("login.html", error=error)
 
