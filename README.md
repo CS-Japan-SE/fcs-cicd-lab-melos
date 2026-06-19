@@ -22,7 +22,7 @@ GitHub (push)
   +-------------------------+
   | frontend (Flask+Sensor) |  <- Internet公開
   +-------------------------+
-  | mock-api (FastAPI)      |  <- Render内部のみ
+  | mock-api (FastAPI)      |  <- Internet公開（無料プランのため）
   +-------------------------+
 ```
 
